@@ -39,13 +39,13 @@ reg[7:0] shift;
 //aexp is exponent part of a, bexp is exponent part of b
 aexp = a[30:23];  bexp = b[30:23];
 
-        asig = { 2'b0, aexp ? 1'b1 : 1'b0,a[22:0] };
-        bsig = { 2'b0, bexp ? 1'b1 : 1'b0,b[22:0] };
+        asig = {1'b1,a[22:0]};
+        bsig = {1'b1,b[22:0]};
 
 //de-normalize b so that aexp == bexp.
 
 shift = aexp - bexp;
-bsig = bsig >> shift;
+bsig = bsig << shift;
 
  //negate the significands.
  if ( aneg ) asig = (~asig) + 1'b1;
@@ -55,11 +55,11 @@ bsig = bsig >> shift;
  sumsig = asig + bsig;
  
  //Take absolute value of sum.
- sumneg = sumsig[22];
- if ( sumneg ) sumsig = -sumsig;
+ sumneg = sumsig[23];
+ if ( sumneg ) sumsig = (~sumsig) + 1'b1;
  
 //normalization
-if(sumsig[21]) 
+if(sumsig[22]) 
   begin
  //Sum overflow.
       sumexp = aexp + 1;
