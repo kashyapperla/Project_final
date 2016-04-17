@@ -48,24 +48,30 @@ shift = aexp - bexp;
 bsig = bsig << shift;
 
  //negate the significands.
- if ( aneg ) asig = (~asig) + 1'b1;
- if ( bneg ) bsig = (~bsig) + 1'b1;
+ if ( aneg )
+ asig = (~{aneg,asig}) + 1'b1;
+ else
+ asig = {1'b0,asig};
+ if ( bneg ) 
+ bsig = (~{bneg,bsig}) + 1'b1;
+ else
+ bsig = {1'b0,bsig};
 
  //Sum calculation
  sumsig = asig + bsig;
  
  //Take absolute value of sum.
- sumneg = sumsig[23];
+ sumneg = sumsig[24];
  if ( sumneg ) sumsig = (~sumsig) + 1'b1;
  
 //normalization
-if(sumsig[22]) 
+if(sumsig[23]) 
   begin
  //Sum overflow.
       sumexp = aexp + 1;
-      sumsig = sumsig >> 1;
+      sumsig = sumsig << 1;
 
-      end else if ( sumsig ) 
+      end else
   begin
       //not a overflow.
 	  integer pos, val, i;
