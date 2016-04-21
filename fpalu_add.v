@@ -4,13 +4,13 @@ output[31:0]sum;
 
 reg sumneg;//the sign bit is represented as neg
 reg[7:0] sumexp =0;
-reg[24:0] sumsig=0;
+reg[25:0] sumsig=0;
 reg[31:0]sum=0;
 
 
 //for internal computations
 reg[31:0]a,b;
-reg[24:0]asig,bsig;
+reg[25:0]asig,bsig;
 reg[7:0]aexp,bexp;
 reg aneg,bneg;
 reg[7:0] shift;
@@ -44,23 +44,24 @@ aexp = a[30:23];  bexp = b[30:23];
 shift = aexp - bexp;
 bsig = bsig >>shift;
 
+if((aneg==bneg)|| ((aneg!=bneg)&&(asig>bsig))) sumneg = aneg;
+else /*if((aneg!=bneg)&& (asig<bsig))*/sumneg = bneg;
+
+ 
+
  //negate the significands.
- if ( aneg )
- asig = (~{aneg,asig}) + 1'b1;
- else
- asig = {1'b0,asig};
- if ( bneg ) 
- bsig = (~{bneg,bsig}) + 1'b1;
- else
- bsig = {1'b0,bsig};
+ if ( aneg ) asig = -asig;
+ if ( bneg ) bsig = -bsig;
 
  //Sum calculation
  sumsig = asig + bsig;
- 
- //Take absolute value of sum.
- sumneg = sumsig[24];
- if ( sumneg ) sumsig = (~sumsig) + 1'b1;
- 
+
+
+
+if ((aneg == 1'b1 && bneg == 1'b1) || ((asig < bsig) && (bneg == 1'b1) && (aneg == 1'b0)) || ((bsig < asig) && (aneg == 1'b1) && (bneg == 1'b0)))
+sumsig = -sumsig;
+
+//if((aneg == 1'b1) && (bneg == 1'b0) && (asig < bsig)) sumsig = -sumsig;
 //normalization
 if(sumsig[23]) 
   begin
@@ -70,12 +71,12 @@ if(sumsig[23])
 
       end
  else
-  begin
+ begin
       //not a overflow.
 	 
 
 // Find position of first non-zero digit.
-       for (i = 23; i >= 0; i = i - 1 ) 
+       for (i = 23 ; i >= 0; i = i - 1 ) 
            begin
 
 	   if ( !pos && sumsig[i] )
