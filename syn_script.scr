@@ -2,13 +2,13 @@
 read_file -format verilog {"fpalu.v"} 
 
 #set the current design
-set current_design fpalu.v 
+set current_design fpalu
 
 #Link the design
 link 
 
 #create clockand constrain the design 
-create_clock "clock" -period 4     -name  "clock"  
+create_clock "clock" -period 16     -name  "clock"  
 set_input_delay -clock clock  -max -rise 0.35 "A"
 set_input_delay -clock clock  -min -rise 0.1 "A"
 set_input_delay -clock clock  -max -rise 0.35 "B"
@@ -21,14 +21,6 @@ set_output_delay -clock clock  -max -rise 0.8 "Result"
 set_output_delay -clock clock  -min -rise 0.2 "Result"
 set_output_delay -clock clock  -max -rise 0.8 "overflow"
 set_output_delay -clock clock  -min -rise 0.2 "overflow"
-set_output_delay -clock clock  -max -rise 0.8 "out1"
-set_output_delay -clock clock  -min -rise 0.2 "out1"
-set_output_delay -clock clock  -max -rise 0.8 "out2"
-set_output_delay -clock clock  -min -rise 0.2 "out2"
-set_output_delay -clock clock  -max -rise 0.8 "flag1"
-set_output_delay -clock clock  -min -rise 0.2 "flag1"
-set_output_delay -clock clock  -max -rise 0.8 "flag2"
-set_output_delay -clock clock  -min -rise 0.2 "flag2"
 
 set_dont_touch_network  "clock" 
 set_max_area 0 

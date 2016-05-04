@@ -67,13 +67,13 @@ case ({asign,bsign})
 2'b00 : sumsig = asig + bsig;
 2'b01 : sumsig = asig + bsig1;
 2'b10 : sumsig = asig1 + bsig;
-2'b11 : sumsig = asig1 + bsig1;
+2'b11 : sumsig = asig + bsig;
 
 endcase
 
+$display("over = %b",overflow);
 
-
-if ((asign == 1'b1 && bsign == 1'b1) || ((asig < bsig) && (bsign == 1'b1) && (asign == 1'b0)) || ((bsig < asig) && (asign == 1'b1) && (bsign == 1'b0)))
+if (((asig < bsig) && (bsign == 1'b1) && (asign == 1'b0)) || ((bsig < asig) && (asign == 1'b1) && (bsign == 1'b0)))
 sumsig = -sumsig;
 
 //normalization

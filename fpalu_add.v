@@ -1,9 +1,10 @@
 module fpalu_add(a_in,b_in,sum);
 input[31:0]a_in,b_in;
 output[31:0]sum;
+//output reg overflow = 1'b0;
 
 reg sumsign;//the sign bit is represented as neg
-reg[7:0] sumexp =0;
+reg[8:0] sumexp =0;
 reg[25:0] sumsig=0;
 reg[31:0]sum=0;
 
@@ -46,10 +47,11 @@ aexp = a[30:23];  bexp = b[30:23];
 shift = aexp - bexp;
 bsig = bsig >> shift;
 
+//if(aexp < 0 && aexp > 255) overflow = 1'b1;
 
 
 if((asign==bsign)|| ((asign!=bsign)&&(asig>bsig))) sumsign = asign;
-else sumsign = bsign;
+else /*if((asign!=bign)&& (asig<bsig))*/sumsign = bsign;
 
  
 
@@ -76,14 +78,14 @@ sumsig = -sumsig;
 //normalization
 if(sumsig[23]) 
   begin
- //Sum overflow.
+ 
       sumexp = aexp + 1;
       sumsig = sumsig >> 1;
 
       end
  else
  begin
-      //not a overflow.
+ 
 	 
 
 // Find position of first non-zero digit.
@@ -106,11 +108,16 @@ if(sumsig[23])
 
     end
 
-    end 
+ 
 
-end 
+    end 
+     
 
 end
+
+
+
+//if(sumexp < 0 && sumexp > 255) overflow = 1'b1;
 
 //the output format assign statements
 sum[31] = sumsign;
@@ -120,4 +127,13 @@ sum[22:0] = sumsig;
 
 end
 
+/*if(y == 22) 
+
+begin
+
+sumexp = 9'b0 ; sumsign = 1'b0;
+
+end */
+
+end
 endmodule
