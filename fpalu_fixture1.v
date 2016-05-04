@@ -1,19 +1,14 @@
 `include "fpalu.v"
 `include "verify.v"
 
-module fpalu_fixture;
+module fpalu_fixture1;
 reg [31:0]a,b;
 reg op,clk,rst;
-
-wire [31:0]out1;
-//wire [31:0]out2;
-wire o1;
-//wire o2;
-
+wire [31:0]out1,out2;
+wire o1,o2;
 integer data_a    ; // file handler
 
 integer               err    ; // file handler
-
 
 initial
 
@@ -23,21 +18,21 @@ initial
 
                  forever #10 clk=~clk;
 
-         end  
-
-   
+         end
 initial
-    $vcdpluson;
-  
+$vcdpluson;
+
+
+//$monitor($time," A=%h B=%h op=%b clk=%b rst=%b S=%h overflow=%b",a,b,op,clk,rst,out,o);
+
 fpalu a1(a,b,op,clk,rst,out1,o1);
-//fpalu A6(.A(a),.B(b),.clock(clk),.reset(rst),.op(op),.Result(out1),.overflow(o1));
-//verify A8(.a_in(a),.b_in(b),.clk(clk),.reset(rst),.op(op),.Result(out2),.overflow(o2));
+verify a2(a,b,clk,rst,op,out2,o2);
 
 
 initial 
 begin
 op = 0;
-forever #20 op=~op;
+forever #15 op=~op;
 end 
     
 initial 
@@ -51,7 +46,7 @@ begin
 
 #20 rst = 1'b1;
 @(posedge clk);
-       rst = 1'b0;
+#20       rst = 1'b0;
         err = $fscanf(data_a,"%h %h\n",a,b);
         if(err != 2)
         begin
@@ -65,32 +60,24 @@ rst = 1'b0;
           $display("a:\t%h",a);
           $display("b:\t%h",b);
 $display("op:\t%b",op);
-//$display("out2: %h",out2);      
-$display("out1: %h",out1);
+$display("out1: %h",out1);  
+$display("out2: %h",out2);     
 end
-//$display("A:%h",A);   
+/*
+initial
 
-/*  $display("Expected result,Expected overflow:\t%h %b",out2,o2);
-$display("Actual result, Actual overflow:\t%h %b",out1,o1);
-
-if(out1 == out2)
-$display("PASS");
-else if((o1 == 1) && (o2 == 1))
-$display("PASS");
-else
-$display("FAIL");
+begin
+rst = 0;
+#20 a= 32'h0deeee00 ; b= 32'h0dee0000; op=0;  rst=1;
+#20 a=32'hf5550005 ; b= 32'h7555000d; op=1;  rst=1;
+#20 a=32'hfee30099 ; b= 32'h7de00090; op=0;  rst=1;
+#20 a=32'hd5551255 ; b= 32'hd5551250; op=1; rst=1;
+#20 a=$random ; b= $random; op=0;  rst=1;
+#20 a=$random ; b= $random; op=1;  rst=1;
 */
-
-
-
 end
-
-
-
-
-
 $fclose(data_a);
-
 #200 $finish;
+
 end
 endmodule
